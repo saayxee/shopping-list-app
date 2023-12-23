@@ -2,6 +2,7 @@
 const itemForm = document.querySelector("#item-form");
 const itemInput = document.querySelector("#item-input");
 const itemList = document.querySelector("#item-list");
+const clearBtn = document.querySelector("#clear")
 
 // Adding
 function addItem(e) {
@@ -47,6 +48,17 @@ function removeItem(e) {
   }
 }
 
+// Clearing
+function clearItems() { 
+  // Easy Way
+  // itemList.innerHTML = ""
+  // Faster Way
+  while (itemList.firstChild) { 
+    itemList.removeChild(itemList.firstChild)
+  }
+}
+
 // Event Listeners
 itemForm.addEventListener("submit", addItem);
 itemList.addEventListener("click", removeItem);
+clearBtn.addEventListener("click", clearItems);
