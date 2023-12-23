@@ -1,3 +1,4 @@
+// Variables
 const itemForm = document.querySelector("#item-form");
 const itemInput = document.querySelector("#item-input");
 const itemList = document.querySelector("#item-list");
@@ -24,6 +25,7 @@ function addItem(e) {
   itemInput.value = "";
 }
 
+// Adding Utility Functions
 function createButton(classes) {
   const button = document.createElement("button");
   button.className = classes;
@@ -40,14 +42,8 @@ function createIcon(classes) {
 
 // Removing
 function removeItem(e) {
-  // console.log(e.target);
-  // if (e.target.parentElement.classList.contains("remove-item")) {
-
-  // }
-  if (
-    e.target.parentElement.classList.contains("remove-item")
-  ) { 
-    e.target.parentElement.parentElement.remove()
+  if (e.target.parentElement.classList.contains("remove-item")) {
+    e.target.parentElement.parentElement.remove();
   }
 }
 
