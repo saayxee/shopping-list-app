@@ -7,8 +7,10 @@ const itemFilter = document.querySelector("#filter");
 
 // Adding
 function addItem(e) {
+  // Preventing The URL From Changin
   e.preventDefault();
-
+  
+  // Variables
   const newItem = itemInput.value;
 
   // Validate Input
@@ -70,6 +72,7 @@ function createIcon(classes) {
 
 // Removing
 function removeItem(e) {
+  // If Parent Element Contains "remove-item" As A Class Name
   if (e.target.parentElement.classList.contains("remove-item")) {
     if (confirm("Are You Sure?")) {
       e.target.parentElement.parentElement.remove();
@@ -93,13 +96,38 @@ function clearItems() {
   resetUI();
 }
 
+// Filtering
+
+function filterItems(e) {
+  // Variables
+  const items = itemList.querySelectorAll("li");
+  const text = e.target.value.toLowerCase();
+  
+  items.forEach((item) => { 
+    // Item Text
+    const itemName = item.firstChild.textContent.toLowerCase();
+    // If Includes Filter
+    if (itemName.includes(text)) {
+      item.style.display = "flex"
+    }
+    else { 
+      item.style.display = "none"
+    }
+  })
+}
+
 // Deleting Extra Components Of Website Based On List
 function resetUI() {
+  // Variables
   const items = itemList.querySelectorAll("li");
+  
+  // Removing Extra Components Based On List Items
   if (items.length === 0) {
     clearBtn.style.display = "none";
     itemFilter.style.display = "none";
-  } else {
+  }
+  // Adding Extra Components Based On List Items
+  else {
     clearBtn.style.display = "block";
     itemFilter.style.display = "block";
   }
@@ -109,6 +137,7 @@ function resetUI() {
 itemForm.addEventListener("submit", addItem);
 itemList.addEventListener("click", removeItem);
 clearBtn.addEventListener("click", clearItems);
+itemFilter.addEventListener("input", filterItems)
 
 // Checkers/Resetters
 resetUI();
