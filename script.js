@@ -5,34 +5,38 @@ const itemList = document.querySelector("#item-list");
 const clearBtn = document.querySelector("#clear");
 const itemFilter = document.querySelector("#filter");
 
-// Adding
-function addItem(e) {
-  // Preventing The URL From Changin
+// Display Items
+function displayItems() {
+  // Get Items From Storage
+  const itemsFromStorage = getItemFromStorage();
+
+  // Loop
+  itemsFromStorage.forEach((item) => addItemToDOM(item));
+
+  // Reset UI
+  resetUI();
+}
+
+// Add To DOM And Local Storage
+function onAddItemSubmit(e) {
+  // Prevent URL From Changing
   e.preventDefault();
-  
+
   // Variables
   const newItem = itemInput.value;
 
   // Validate Input
   if (newItem === "") {
+    // Alert User To Add Item
     alert("Please add an item");
     return;
   }
 
-  // Create List Item
-  const li = document.createElement("li");
+  // Add Item To DOM
+  addItemToDOM(newItem);
 
-  // Adding Text To Li
-  li.appendChild(document.createTextNode(newItem));
-
-  // Creating Button
-  const button = createButton("remove-item btn-link text-red");
-  
-  // Adding Button To Li
-  li.appendChild(button);
-  
-  // Add Li To DOM
-  itemList.appendChild(li);
+  // Add Item To Local Storage
+  addItemToStorage(newItem);
 
   // Check UI
   resetUI();
@@ -41,103 +45,183 @@ function addItem(e) {
   itemInput.value = "";
 }
 
-// Adding Utility Functions
+// Add Item To DOM
+function addItemToDOM(item) {
+  // Create List Item
+  const li = document.createElement("li");
+
+  // Add Text To Li
+  li.appendChild(document.createTextNode(item));
+
+  // Create Button
+  const button = createButton("remove-item btn-link text-red");
+
+  // Add Button To Li
+  li.appendChild(button);
+
+  // Add Li To DOM
+  itemList.appendChild(li);
+}
+
+// Add Utility Functions
 function createButton(classes) {
-  // Creating Button
+  // Create Button
   const button = document.createElement("button");
-  
-  // Adding Button Classes
+
+  // Add Button Classes
   button.className = classes;
-  
-  // Creating Icon
+
+  // Create Icon
   const icon = createIcon("fa-solid fa-xmark");
-  
-  // Adding Icon Classes
+
+  // Add Icon Classes
   button.appendChild(icon);
-  
-  // Returning Button
+
+  // Return Button
   return button;
 }
 
 function createIcon(classes) {
-  // Creating Icon
+  // Create Icon
   const icon = document.createElement("i");
 
-  // Adding Icon Classes
+  // Add Icon Classes
   icon.className = classes;
 
-  // Returning Icon
+  // Return Icon
   return icon;
 }
 
-// Removing
-function removeItem(e) {
-  // If Parent Element Contains "remove-item" As A Class Name
-  if (e.target.parentElement.classList.contains("remove-item")) {
-    if (confirm("Are You Sure?")) {
-      e.target.parentElement.parentElement.remove();
-    }
-  }
+// Add Items To Storage
+function addItemToStorage(item) {
+  // Variables
+  const itemsFromStorage = getItemFromStorage();
 
-  // Check UI
-  resetUI();
+  // Add Items To Items From Storage || Array
+  itemsFromStorage.push(item);
+
+  // Convert To JSON String And Add To Local Storage
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
 }
 
-// Clearing
+// Get Items From Storage
+function getItemFromStorage() {
+  // Variables
+  const itemsFromStorage = JSON.parse(localStorage.getItem("items")) ?? [];
+
+  // Return
+  return itemsFromStorage;
+}
+
+// Remove Item
+function removeItem(item) {
+  if (
+    confirm(`Are you sure you want to delete the item "${item.textContent}"?`)
+  ) {
+    // Remove Item From DOM
+    item.remove();
+
+    // Remove Item From Storage
+    removeItemFromStorage(item.textContent);
+
+    // Reset UI
+    resetUI();
+  }
+}
+
+// On Click Item List
+function onClickItem(e) {
+  // If Parent Element Contains "remove-item" As A Class Name
+  if (e.target.parentElement.classList.contains("remove-item")) {
+    // Remove Item Entirely
+    removeItem(e.target.parentElement.parentElement);
+  }
+}
+
+// Remove Item From Storage
+function removeItemFromStorage(item) {
+  // Get Items From Storage
+  let itemsFromStorage = getItemFromStorage();
+
+  // Filter Out Item To Be Removed
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+
+  // Remove Item From Storage
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+}
+
+// Clear Items
 function clearItems() {
-  // Easy Way
   // itemList.innerHTML = ""
-  // Faster Way
+  // Loop Through ItemList
   while (itemList.firstChild) {
+    // Remove From DOM
     itemList.removeChild(itemList.firstChild);
   }
 
+  // Clear From Storage
+  clearItemsFromStorage();
+
   // Check UI
   resetUI();
 }
 
-// Filtering
-
+// Clear Items From Storage
+function clearItemsFromStorage() {
+  localStorage.removeItem("items");
+}
+// Filter Items
 function filterItems(e) {
   // Variables
   const items = itemList.querySelectorAll("li");
   const text = e.target.value.toLowerCase();
-  
-  items.forEach((item) => { 
+
+  // Loop
+  items.forEach((item) => {
     // Item Text
     const itemName = item.firstChild.textContent.toLowerCase();
     // If Includes Filter
     if (itemName.includes(text)) {
-      item.style.display = "flex"
+      // Set Display Flex
+      item.style.display = "flex";
     }
-    else { 
-      item.style.display = "none"
+    // Else If Doesn't
+    else {
+      // Set Display None
+      item.style.display = "none";
     }
-  })
+  });
 }
 
-// Deleting Extra Components Of Website Based On List
+// Delete Extra Components Of Website Based On List
 function resetUI() {
   // Variables
   const items = itemList.querySelectorAll("li");
-  
-  // Removing Extra Components Based On List Items
+
+  // Remove Extra Components Based On List Items
   if (items.length === 0) {
+    // Set Display None
     clearBtn.style.display = "none";
     itemFilter.style.display = "none";
   }
-  // Adding Extra Components Based On List Items
+  // Add Extra Components Based On List Items
   else {
+    // Set Display Block
     clearBtn.style.display = "block";
     itemFilter.style.display = "block";
   }
 }
 
-// Event Listeners
-itemForm.addEventListener("submit", addItem);
-itemList.addEventListener("click", removeItem);
-clearBtn.addEventListener("click", clearItems);
-itemFilter.addEventListener("input", filterItems)
+// Initialize App
+function initializeApp() {
+  // Event Listeners
+  itemForm.addEventListener("submit", onAddItemSubmit);
+  itemList.addEventListener("click", onClickItem);
+  clearBtn.addEventListener("click", clearItems);
+  itemFilter.addEventListener("input", filterItems);
+  document.addEventListener("DOMContentLoaded", displayItems);
+}
 
 // Checkers/Resetters
 resetUI();
+initializeApp();
