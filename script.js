@@ -4,6 +4,8 @@ const itemInput = document.querySelector("#item-input");
 const itemList = document.querySelector("#item-list");
 const clearBtn = document.querySelector("#clear");
 const itemFilter = document.querySelector("#filter");
+const formBtn = itemForm.querySelector("button");
+let isEditMode = false;
 
 // Display Items
 function displayItems() {
@@ -28,8 +30,23 @@ function onAddItemSubmit(e) {
   // Validate Input
   if (newItem === "") {
     // Alert User To Add Item
-    alert("Please add an item");
+    alert("Please add an item.");
     return;
+  }
+
+  // Check for edit mode
+  if (isEditMode) {
+    const itemToEdit = itemList.querySelector(".edit-mode");
+
+    removeItemFromStorage(itemToEdit.textContent);
+    itemToEdit.classList.remove("edit-mode");
+    itemToEdit.remove();
+    setItemToDefault()
+  } else {
+    if (checkIfItemExists(newItem)) {
+      alert("That item already exists!");
+      return;
+    }
   }
 
   // Add Item To DOM
@@ -81,6 +98,7 @@ function createButton(classes) {
   return button;
 }
 
+// Create Icon
 function createIcon(classes) {
   // Create Icon
   const icon = document.createElement("i");
@@ -107,7 +125,8 @@ function addItemToStorage(item) {
 // Get Items From Storage
 function getItemFromStorage() {
   // Variables
-  const itemsFromStorage = JSON.parse(localStorage.getItem("items")) ?? [];
+  let itemsFromStorage = JSON.parse(localStorage.getItem("items")) ?? [];
+  // itemsFromStorage = [...new Set(items)]
 
   // Return
   return itemsFromStorage;
@@ -115,9 +134,15 @@ function getItemFromStorage() {
 
 // Remove Item
 function removeItem(item) {
+  // Confirming If Use Wants To Delete Item
   if (
     confirm(`Are you sure you want to delete the item "${item.textContent}"?`)
   ) {
+    
+    if (isEditMode) { 
+      setItemToDefault()
+    }
+
     // Remove Item From DOM
     item.remove();
 
@@ -136,6 +161,41 @@ function onClickItem(e) {
     // Remove Item Entirely
     removeItem(e.target.parentElement.parentElement);
   }
+  // Change State Of App
+  else {
+    setItemToEdit(e.target);
+  }
+}
+
+// Check If Item Exists
+function checkIfItemExists(item) {
+  const itemsFromStorage = getItemFromStorage();
+  return itemsFromStorage.includes(item);
+}
+
+// Change state of app to edit mode
+function setItemToEdit(item) {
+  isEditMode = true;
+  itemList
+    .querySelectorAll("li")
+    .forEach((i) => i.classList.remove("edit-mode"));
+  item.classList.add("edit-mode");
+  formBtn.innerHTML = `<i class="fa-solid fa-pen"></i>
+    Update Item
+    `;
+  formBtn.style.backgroundColor = "#228B22";
+  itemInput.value = item.textContent;
+}
+// Change state of app to default
+function setItemToDefault(item) {
+  isEditMode = false;
+  itemList
+    .querySelectorAll("li")
+    .forEach((i) => i.classList.remove("edit-mode"));
+  formBtn.innerHTML = `<i class="fa-solid fa-plus"></i>
+    Add Item
+    `;
+  formBtn.style.backgroundColor = "#333";
 }
 
 // Remove Item From Storage
