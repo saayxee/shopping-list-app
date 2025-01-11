@@ -11,7 +11,7 @@ A simple shopping list web application from Brad Traversy's [Modern Javascript F
 ## Getting Started
 
 ```
-git pull https://github.com/saayxee/shopping-list-app
+git clone https://github.com/saayxee/shopping-list-app
 cd shopping-list-app
 ```
 
