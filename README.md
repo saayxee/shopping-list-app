@@ -1,6 +1,7 @@
 # 🛒 Shopping List Web Application
 > [!Note]
 > I built this project in the course: [Modern JavaScript from the beginning course from Brad Traversy.](https://www.traversymedia.com/modern-javascript-2-0)
+> 
 A simple shopping list web application built with HTML, CSS, JavaScript, and the localStorage for data storage.
 
 ## Features
