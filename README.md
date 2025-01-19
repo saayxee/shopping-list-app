@@ -25,6 +25,7 @@ cd shopping-list-app
 ## Usage
 > [!Important]
 > Make sure you have the extension 'Live Server' installed on Visual Studio Code.
+
 Right click on index.html and click Open With Live Server.
 
 
